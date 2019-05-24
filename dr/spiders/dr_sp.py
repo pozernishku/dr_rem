@@ -17,14 +17,17 @@ class DrSpSpider(scrapy.Spider):
             print('Please set an author parameter. For example try: scrapy crawl dr_sp -a author=1244.Mark_Twain -s LOG_FILE=quotes.log -t csv -o - > quotes.csv')
 
     def parse(self, response):
-        selector_list = response.xpath('//div[@class="quotes"]/div[@class="quote"]/div[@class="quoteDetails"]/div[@class="quoteText"]')
+        selector_list = response.xpath('//div[@class="quotes"]/div[@class="quote"]/div[@class="quoteDetails"]')
 
         for selector_item in selector_list:
-            q = selector_item.xpath('text()[1]').get(default='').strip()
-            b = selector_item.xpath('span[contains(@id, "quote_book")]/a/text()').get(default='').strip()
+            q = ''.join(selector_item.xpath('div[@class="quoteText"]/text()[following-sibling::br]').getall()).strip()
+            b = selector_item.xpath('div[@class="quoteText"]/span[contains(@id, "quote_book")]/a/text()').get(default='').strip()
+            tags = ' '.join(selector_item.xpath('div[@class="quoteFooter"]/div[@class="greyText smallText left"]/a/text()').getall()).strip()
+
             yield DrItem(quote = q,
                          author = response.meta.get('author'),
                          book = b,
+                         tags = tags,
                          url = response.url)
 
         next_page = response.xpath('//div/div/a[@class="next_page"]/@href').get()
