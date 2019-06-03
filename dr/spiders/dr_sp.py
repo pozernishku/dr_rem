@@ -21,7 +21,7 @@ class DrSpSpider(scrapy.Spider):
         selector_list = response.xpath('//div[@class="quotes"]/div[@class="quote"]/div[@class="quoteDetails"]')
 
         for selector_item in selector_list:
-            q = '<br>'.join(selector_item.xpath('div[@class="quoteText"]/text()[following-sibling::br] | div[@class="quoteText"]/i/text()').getall()).strip()
+            q = '<br>'.join(selector_item.xpath('div[@class="quoteText"]/text()[following-sibling::br] | div[@class="quoteText"]/i/text()').getall()).strip().replace(',', '|')
             b = selector_item.xpath('div[@class="quoteText"]/span[contains(@id, "quote_book")]/a/text()').get(default='').strip()
             tags = ' '.join(selector_item.xpath('div[@class="quoteFooter"]/div[@class="greyText smallText left"]/a/text()').getall()).strip()
 
