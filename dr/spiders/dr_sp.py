@@ -10,6 +10,7 @@ class DrSpSpider(scrapy.Spider):
     allowed_domains = ['www.goodreads.com']
 
     def start_requests(self):
+        cookies_to_send = ''
         filename = 'data.txt'
         mydata_path = data_path(filename)
         if os.path.exists(mydata_path) and os.path.getsize(mydata_path) > 0:
