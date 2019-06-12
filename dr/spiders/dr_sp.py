@@ -11,7 +11,7 @@ class DrSpSpider(scrapy.Spider):
         url = 'https://www.goodreads.com/author/quotes/'
         auth = getattr(self, 'author', None)
 
-        if auth is not None:
+        if auth is not None: 
             url = url + auth + '?page=1'
             yield scrapy.Request(url, self.parse, meta={'author': auth})
         else:
