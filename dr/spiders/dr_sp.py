@@ -10,14 +10,18 @@ class DrSpSpider(scrapy.Spider):
     def start_requests(self):
         url = 'https://www.goodreads.com/author/quotes/'
         auth = getattr(self, 'author', None)
+        yield scrapy.Request('https://www.goodreads.com/', self.parse, meta={'url': url, 'auth': auth})
 
+    def parse(self, response):
+        auth = response.meta.get('auth')
+        url = response.meta.get('url')
         if auth is not None:
             url = url + auth + '?page=1'
-            yield scrapy.Request(url, self.parse, meta={'author': auth})
+            yield scrapy.Request(url, self.parse_one, meta={'author': auth})
         else:
             print('Please set an author parameter. For example try: scrapy crawl dr_sp -a author=1244.Mark_Twain -s LOG_FILE=quotes.log -t csv -o - > quotes.csv')
 
-    def parse(self, response):
+    def parse_one(self, response):
         selector_list = response.xpath('//div[@class="quotes"]/div[@class="quote"]/div[@class="quoteDetails"]')
 
         for selector_item in selector_list:
@@ -33,4 +37,4 @@ class DrSpSpider(scrapy.Spider):
 
         next_page = response.xpath('//div/div/a[@class="next_page"]/@href').get()
         if next_page is not None:
-            yield response.follow(next_page, self.parse, meta=response.meta)
+            yield response.follow(next_page, self.parse_one, meta=response.meta)
