@@ -13,7 +13,7 @@ class DrSpSpider(scrapy.Spider):
 
         if auth is not None:
             url = url + auth + '?page=1'
-            yield scrapy.Request(url, self.parse, meta={'author': auth})
+            yield scrapy.Request(url, self.parse, meta={'author': auth}, dont_filter=True)
         else:
             print('Please set an author parameter. For example try: scrapy crawl dr_sp -a author=1244.Mark_Twain -s LOG_FILE=quotes.log -t csv -o - > quotes.csv')
 
